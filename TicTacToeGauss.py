@@ -6,9 +6,7 @@ O_MARK = "O"
 QUIT_GAME = "Q"
 
 def InitializeBoard():
-    board = [EMPTY_SELECTION for i in range(0, 9)]
-    possible_places = [i for i in range(0, 9)]
-    return (board, possible_places)
+    return [EMPTY_SELECTION for i in range(0, 9)]
 
 def OutputBoardState(board):
     print(*board[0:3])
@@ -16,68 +14,80 @@ def OutputBoardState(board):
     print(*board[6:9])
     print()
 
-def CheckIfWinner(mark, board):
-    if board[0:3] == [mark, mark, mark] or board[3:6] == [mark, mark, mark]:
-        return True
-    if board[6:9] == [mark, mark, mark] or board[0:7:3] == [mark, mark, mark]:
-        return True
-    if board[1:8:3] == [mark, mark, mark] or board[2:9:3] == [mark, mark, mark]:
-        return True
-    if board[0:9:4] == [mark, mark, mark] or board[2:7:2] == [mark, mark, mark]:
-        return True
-    else:
-        return False
+def AllowedMoves(board):
+    return [i for i in range(9) if board[i] == EMPTY_SELECTION]
+            
+def OutputPossibleMoves(board):
+    movesBoard = [EMPTY_SELECTION] * 9
+    for i in range(9):
+        if board[i] == EMPTY_SELECTION:
+            movesBoard[i] = i + 1
+    OutputBoardState(movesBoard)
 
-def GetComputerMove(possible_places):
-    return int(random.choice(possible_places))
+def Win(mark, board):
+    fullRow = [mark]*3
+    win = (board[0:3] == fullRow or board[3:6] == fullRow or board[6:9] == fullRow
+    or board[0:7:3] == fullRow or board[1:8:3] == fullRow or board[2:9:3] == fullRow
+    or board[0:9:4] == fullRow or board[2:7:2] == fullRow)
+    
+    if win:
+        print("Player " + mark + " wins the game \n")
+    return win
 
-def GetInputMove():
-    spot = input("Where you want to place it ?")
-    return int(spot)
+def Draw(board):
+    draw = EMPTY_SELECTION not in board
+    if draw:
+        print("The game is a draw \n")
 
-def AskUserForSelection():
+    return draw
+
+def GetInputMove(board):
+    allowedUserInputs = [x + 1 for x in AllowedMoves(board)]
+    move = int(input("Where do you want to place it (please select an empty field) ?"))
+    while move not in allowedUserInputs:
+        print("Your input does not specify a valid move")
+        print("Please enter one of the following inputs ")
+        OutputPossibleMoves(board)
+        move = int(input("Where do you want to place it?"))
+    return move - 1
+
+def GetInput():
     print("Please choose one of the options:")
     print(X_MARK + " or " + X_MARK.lower() + ", " 
-    + O_MARK + " or " + O_MARK.lower() + ", " 
-    + QUIT_GAME + " or " + QUIT_GAME.lower() + " to quit the game: \n")
+        + O_MARK + " or " + O_MARK.lower() + ", " 
+        + " any other input to quit the game:")
 
-    userInput = str(input())
-    if userInput.upper() == X_MARK:
-        return X_MARK
-    elif userInput.upper() == O_MARK:
-        return O_MARK
+    userInput = str(input()).upper()
+    if userInput == X_MARK or userInput == O_MARK:
+        return userInput
     else:
         return QUIT_GAME
 
-def PlayMove(currentMark, humanMark, board, possible_places):
-    if currentMark == humanMark:
-        position = GetInputMove()  
-    else:
-        position = GetComputerMove(possible_places)
+def GetComputerMove(board):
+    return int(random.choice(AllowedMoves(board)))
 
-    possible_places.remove(position)
+def MakeMove(currentMark, humanMark, board):
+    if currentMark == humanMark:
+        position = GetInputMove(board)
+    else:
+        position = GetComputerMove(board)
+    
     board[position] = currentMark
 
-def MoveForPlayer(currentMark,humanMark, board, possible_places):
-    PlayMove(currentMark, humanMark, board, possible_places)
-    OutputBoardState(board)
-    return CheckIfWinner(currentMark, board)
-
 def PlayGame(humanMark):
-    (board, possible_places) = InitializeBoard()
+    board = InitializeBoard()
     
     while True:
-        if MoveForPlayer(X_MARK, humanMark, board, possible_places):
-            print("Player " + X_MARK + " wins the game")
-            break
-
-        if MoveForPlayer(O_MARK, humanMark, board, possible_places):
-            print("Player " + O_MARK + " wins the game")
-            break
+        for mark in [X_MARK,O_MARK]:
+            MakeMove(mark, humanMark, board)
+            if Win(mark, board) or Draw(board):
+                OutputBoardState(board)
+                return
+            OutputBoardState(board)
         
 def PlayGames():
     while True:
-       humanMark = AskUserForSelection()
+       humanMark = GetInput()
        
        if humanMark == QUIT_GAME:
             print("Thank you from playing the game!")
