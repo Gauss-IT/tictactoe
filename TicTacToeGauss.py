@@ -50,24 +50,29 @@ def AskUserForSelection():
         return QUIT_GAME
 
 def PlayMove(currentMark, humanMark, board, possible_places):
-    position = GetInputMove() if (currentMark == humanMark) else GetComputerMove(possible_places) 
+    if currentMark == humanMark:
+        position = GetInputMove()  
+    else:
+        position = GetComputerMove(possible_places)
+
     possible_places.remove(position)
     board[position] = currentMark
+
+def MoveForPlayer(currentMark,humanMark, board, possible_places):
+    PlayMove(currentMark, humanMark, board, possible_places)
+    OutputBoardState(board)
+    return CheckIfWinner(currentMark, board)
 
 def PlayGame(humanMark):
     (board, possible_places) = InitializeBoard()
     
     while True:
-        PlayMove(X_MARK, humanMark, board, possible_places)
-        OutputBoardState(board)
-        if CheckIfWinner(X_MARK, board):
-            print("Player" + X_MARK + "wins the game")
+        if MoveForPlayer(X_MARK, humanMark, board, possible_places):
+            print("Player " + X_MARK + " wins the game")
             break
-            
-        PlayMove(O_MARK, humanMark, board, possible_places)
-        OutputBoardState(board)
-        if CheckIfWinner(O_MARK, board):
-            print("Player" + X_MARK + "wins the game")
+
+        if MoveForPlayer(O_MARK, humanMark, board, possible_places):
+            print("Player " + O_MARK + " wins the game")
             break
         
 def PlayGames():
