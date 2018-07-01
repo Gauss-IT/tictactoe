@@ -24,23 +24,6 @@ def OutputPossibleMoves(board):
             movesBoard[i] = i + 1
     OutputBoardState(movesBoard)
 
-def Win(mark, board):
-    fullRow = [mark]*3
-    win = (board[0:3] == fullRow or board[3:6] == fullRow or board[6:9] == fullRow
-    or board[0:7:3] == fullRow or board[1:8:3] == fullRow or board[2:9:3] == fullRow
-    or board[0:9:4] == fullRow or board[2:7:2] == fullRow)
-    
-    if win:
-        print("Player " + mark + " wins the game \n")
-    return win
-
-def Draw(board):
-    draw = EMPTY_SELECTION not in board
-    if draw:
-        print("The game is a draw \n")
-
-    return draw
-
 def GetInputMove(board):
     allowedUserInputs = [x + 1 for x in AllowedMoves(board)]
     move = int(input("Where do you want to place it (please select an empty field) ?"))
@@ -62,7 +45,23 @@ def GetInput():
         return userInput
     else:
         return QUIT_GAME
+def Win(mark, board):
+    fullRow = [mark]*3
+    win = (board[0:3] == fullRow or board[3:6] == fullRow or board[6:9] == fullRow
+    or board[0:7:3] == fullRow or board[1:8:3] == fullRow or board[2:9:3] == fullRow
+    or board[0:9:4] == fullRow or board[2:7:2] == fullRow)
+    
+    if win:
+        print("Player " + mark + " wins the game \n")
+    return win
 
+def Draw(board):
+    draw = EMPTY_SELECTION not in board
+    if draw:
+        print("The game is a draw \n")
+
+    return draw
+    
 def GetComputerMove(board):
     return int(random.choice(AllowedMoves(board)))
 
@@ -83,7 +82,7 @@ def PlayGame(humanMark):
             if Win(mark, board) or Draw(board):
                 OutputBoardState(board)
                 return
-            OutputBoardState(board)
+        OutputBoardState(board)
         
 def PlayGames():
     while True:
