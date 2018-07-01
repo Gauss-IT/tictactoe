@@ -4,19 +4,15 @@ from TicTacToe import TicTacToe
 class TicTacToeGame:    
     @property
     def Marks(self):
-        return self.Game.Marks
+        return self.__game.Marks
     
     @property
     def EmptySelection(self):
-        return self.Game.EmptySelection
-
-    @property
-    def Game(self):
-        return self.__game
+        return self.__game.EmptySelection
 
     def OutputBoardState(self, board = None):
         if board == None:
-            board = self.Game.Board            
+            board = self.__game.Board            
         
         print(*board[0:3])
         print(*board[3:6])
@@ -24,13 +20,13 @@ class TicTacToeGame:
         print()
                 
     def OutputPossibleMoves(self):
-        movesBoard = [self.EmptySelection if self.Game.HasSelection(i) 
+        movesBoard = [self.EmptySelection if self.__game.HasSelection(i) 
                       else i + 1 
-                      for i in range(len(self.Game.Board))]        
+                      for i in range(len(self.__game.Board))]        
         self.OutputBoardState(movesBoard)
     
     def Validate(self, move):
-        if move not in [x + 1 for x in self.Game.AllowedMoves()]:
+        if move not in [x + 1 for x in self.__game.AllowedMoves()]:
             print("Your input does not specify a valid move")
             return False
         else:
@@ -45,18 +41,18 @@ class TicTacToeGame:
         return move - 1    
         
     def MakeMove(self, currentMark, humanMark):
-        position = self.GetInputMove() if currentMark == humanMark else self.Game.GetComputerMove()        
-        self.Game.MakeMove(currentMark, position)
+        position = self.GetInputMove() if currentMark == humanMark else self.__game.GetComputerMove()        
+        self.__game.MakeMove(currentMark, position)
 
     def PlayGame(self, humanMark):       
         while True:
-            for mark in self.Game.Marks:
+            for mark in self.__game.Marks:
                 self.MakeMove(mark, humanMark)
-                if self.Game.Win(mark):
+                if self.__game.Win(mark):
                     self.OutputBoardState()
                     print("Player " + mark + " wins the game \n")
                     return
-                elif self.Game.Draw():
+                elif self.__game.Draw():
                     self.OutputBoardState()
                     print("The game is a draw \n")
                     return
