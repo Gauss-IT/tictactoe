@@ -1,5 +1,5 @@
-import random
 from TicTacToe import TicTacToe
+import SimpleStategy
 
 class TicTacToeGame:    
     @property
@@ -31,6 +31,9 @@ class TicTacToeGame:
             return False
         else:
              return True
+    def GetComputerMove(self, humanMark):
+        return (SimpleStategy
+        .getBestMove(self.__game.OtherMark(humanMark), self.__game))
 
     def GetInputMove(self):
         move = int(input("Where do you want to place it?"))
@@ -41,10 +44,12 @@ class TicTacToeGame:
         return move - 1    
         
     def MakeMove(self, currentMark, humanMark):
-        position = self.GetInputMove() if currentMark == humanMark else self.__game.GetComputerMove()        
+        position = (self.GetInputMove() if currentMark == humanMark 
+               else self.GetComputerMove(humanMark) )       
         self.__game.MakeMove(currentMark, position)
 
     def PlayGame(self, humanMark):       
+        self.__game.Reset()
         while True:
             for mark in self.__game.Marks:
                 self.MakeMove(mark, humanMark)
